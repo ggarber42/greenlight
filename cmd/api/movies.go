@@ -28,7 +28,7 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 			Version:   1,
 		}
 
-		err = app.writeJSON(w, 200, movie, r.Header)
+		err = app.writeJSON(w, 200, envelope{"movie": movie}, r.Header)
 
 		if err != nil {
 			app.logger.Println(err)

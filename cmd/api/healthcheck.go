@@ -7,7 +7,10 @@ import (
 
 
 func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Request){
-	fmt.Fprintln(w, "status: available")
-	fmt.Fprintf(w, "env: %s\n", app.config.env)
-	fmt.Fprintf(w, "version: %s\n", version)
+	json := `{"status": "available", "environment": %q, "version": %q}`
+	json = fmt.Sprintf(json, app.config.env, version)
+
+	w.Header().Set("Content-Type", "application/json")
+
+	w.Write([]byte(json))
 }

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ggarber42/greenlight/internal/data"
+	"github.com/ggarber42/greenlight/internal/validator"
 )
 
 func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +21,24 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		app.errorResponse(w, r, http.StatusBadRequest, err.Error())
 	} else {
-		fmt.Fprintf(w, "%+v\n", input)
+
+
+		movie := &data.Movie{
+			Title: input.Title,
+			Year: input.Year,
+			Runtime: input.Runtime,
+			Genres: input.Genres,
+		}
+
+		v := validator.New()
+
+		if data.ValidateMovie(v, movie); !v.Valid(){
+			app.failedValidationResponse(w, r, v.Errors)
+		} else {
+			fmt.Fprintf(w, "%+v\n", input)
+		}
+
+
 	}
 
 }

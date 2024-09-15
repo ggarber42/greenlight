@@ -1,16 +1,27 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
+func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
 
-func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Request){
-	json := `{"status": "available", "environment": %q, "version": %q}`
-	json = fmt.Sprintf(json, app.config.env, version)
+	data := map[string]string{
+		"status":     "available",
+		"enviroment": app.config.env,
+		"version": version,
+	}
 
-	w.Header().Set("Content-Type", "application/json")
+	json, err := json.Marshal(data)
+	if err != nil {
+		app.logger.Println(err)
+		http.Error(w, "server error", http.StatusInternalServerError)
+	}  else {
 
-	w.Write([]byte(json))
+		w.Header().Set("Content-Type", "application/json")
+	
+		w.Write([]byte(json))
+	}
+
 }

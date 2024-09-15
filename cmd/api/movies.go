@@ -16,7 +16,7 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 	id, err := readIDParam(r)
 
 	if err != nil {
-		http.NotFound(w, r)
+		app.notFoundResponse(w, r)
 	} else {
 
 		movie := data.Movie{
@@ -31,8 +31,7 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 		err = app.writeJSON(w, 200, envelope{"movie": movie}, r.Header)
 
 		if err != nil {
-			app.logger.Println(err)
-			http.Error(w, "serve encontured an error", http.StatusInternalServerError)
+			app.serverErrorResponse(w, r, err)
 		}
 	}
 }

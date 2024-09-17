@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+
+  postgres:
+    container_name: postgres
+    image: postgres:15
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: greenlight
+    ports:
+      - 5432:5432

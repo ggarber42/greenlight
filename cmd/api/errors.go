@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (app *application) logError(r *http.Request, err error){
+func (app *application) logError(r *http.Request, err error) {
 	app.logger.Println(err)
 }
 
@@ -19,7 +19,7 @@ func (app *application) errorResponse(w http.ResponseWriter, r *http.Request, st
 	}
 }
 
-func (app *application) notFoundResponse(w http.ResponseWriter, r *http.Request){
+func (app *application) notFoundResponse(w http.ResponseWriter, r *http.Request) {
 	message := "the requested resource cannot be found"
 	app.errorResponse(w, r, http.StatusNotFound, message)
 }
@@ -37,4 +37,9 @@ func (app *application) methodNotAllowedResponse(w http.ResponseWriter, r *http.
 
 func (app *application) failedValidationResponse(w http.ResponseWriter, r *http.Request, errors map[string]string) {
 	app.errorResponse(w, r, http.StatusUnprocessableEntity, errors)
+}
+
+func (app *application) editConflictResponse(w http.ResponseWriter, r *http.Request) {
+	message := "unable to update the record due to an edit conflict, please try again"
+	app.errorResponse(w, r, http.StatusConflict, message)
 }

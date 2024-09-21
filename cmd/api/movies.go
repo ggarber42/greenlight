@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/ggarber42/greenlight/internal/data"
 	"github.com/ggarber42/greenlight/internal/validator"
@@ -93,13 +94,20 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 			default:
 				app.serverErrorResponse(w, r, err)
 			}
-		} else {
+
+			if r.Header.Get("X-Expected-Version") != "" {
+				if strconv.FormatInt(int64(movie.Version), 32) != r.Header.Get("X-Expected-Version") {
+					app.editConflictResponse(w, r)
+				}
+			} else {
+
+			}
 
 			var input struct {
 				Title   *string       `json:"title"`
 				Year    *int32        `json:"year"`
 				Runtime *data.Runtime `json:"runtime"`
-				Genres  []string     `json:"genres"`
+				Genres  []string      `json:"genres"`
 			}
 
 			err := app.readJSON(w, r, &input)
@@ -107,7 +115,7 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 				app.errorResponse(w, r, http.StatusBadRequest, err.Error())
 			} else {
 
-				if input.Title != nil{
+				if input.Title != nil {
 					movie.Title = *input.Title
 				}
 
@@ -131,7 +139,12 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 					err := app.models.Movies.Update(movie)
 
 					if err != nil {
-						app.serverErrorResponse(w, r, err)
+						switch {
+						case errors.Is(err, data.ErrEditConflict):
+							app.editConflictResponse(w, r)
+						default:
+							app.serverErrorResponse(w, r, err)
+						}
 					} else {
 						err = app.writeJSON(w, http.StatusOK, envelope{"movie": movie}, nil)
 						if err != nil {

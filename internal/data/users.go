@@ -106,13 +106,13 @@ func (m UserModel) Update(user *User) error {
 
 	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&user.Version)
 	if err != nil {
-		switch{
-			case err.Error() == `pq: duplicate key value violates unique constraint "users_email_key"`:
-				return ErrDuplicateEmail
-			case errors.Is(err, sql.ErrNoRows):
-				return ErrEditConflict
-			default:
-				return err
+		switch {
+		case err.Error() == `pq: duplicate key value violates unique constraint "users_email_key"`:
+			return ErrDuplicateEmail
+		case errors.Is(err, sql.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
 		}
 	}
 

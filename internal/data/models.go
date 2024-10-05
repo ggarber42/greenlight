@@ -7,12 +7,12 @@ import (
 
 var (
 	ErrRecordNotFound = errors.New("record not found")
-	ErrEditConflict = errors.New("edit conflict")
+	ErrEditConflict   = errors.New("edit conflict")
 )
 
 type Models struct {
 	Movies MovieModel
-	Users UserModel
+	Users  UserModel
 	// Movies interface { Todo
 	// 	Insert(movie *Movie) error
 	// 	Get(id int64) (*Movie, error)
@@ -24,7 +24,7 @@ type Models struct {
 func NewModels(db *sql.DB) Models {
 	return Models{
 		Movies: MovieModel{DB: db},
-		Users: UserModel{DB: db},
+		Users:  UserModel{DB: db},
 	}
 }
 

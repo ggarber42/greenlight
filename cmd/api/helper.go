@@ -48,7 +48,6 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst int
 	maxBytes := 1_048_576
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 
-
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
 	err := dec.Decode(dst)
@@ -70,7 +69,7 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst int
 				return fmt.Errorf("body contains incorrect JSON type for field %q", unmarshalTypeError.Field.Name)
 			}
 			return fmt.Errorf("body contains incorrect JSON type (at character %d)", unmarshalTypeError.Field.Offset)
-		
+
 		case errors.Is(err, io.EOF):
 			return errors.New("body must not be empty")
 
@@ -91,15 +90,15 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst int
 	return nil
 }
 
-func (app *application) readString(qs url.Values, key string, defaultValue string) string{
+func (app *application) readString(qs url.Values, key string, defaultValue string) string {
 	s := qs.Get(key)
-	if s == ""{
+	if s == "" {
 		return defaultValue
 	}
 	return s
 }
 
-func (app *application) readCSV(qs url.Values, key string, defaultValue []string) []string{
+func (app *application) readCSV(qs url.Values, key string, defaultValue []string) []string {
 	csv := qs.Get(key)
 	if csv == "" {
 		return defaultValue
@@ -109,7 +108,7 @@ func (app *application) readCSV(qs url.Values, key string, defaultValue []string
 
 func (app *application) readInt(qs url.Values, key string, defaultValue int, v *validator.Validator) int {
 	s := qs.Get(key)
-	if s == ""{
+	if s == "" {
 		return defaultValue
 	}
 	i, err := strconv.Atoi(s)
@@ -124,11 +123,11 @@ func (app *application) background(fn func()) {
 
 	app.wg.Add(1)
 
-	go func(){
+	go func() {
 
 		defer app.wg.Done()
 
-		defer func(){
+		defer func() {
 			if err := recover(); err != nil {
 				app.logger.PrintError(fmt.Errorf("%s", err), nil)
 			}
